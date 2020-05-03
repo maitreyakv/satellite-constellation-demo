@@ -3,10 +3,10 @@
  */
 
 // Standard gravitational parameter of Earth
-const mu = 3.9860044189e14; // m^3 / s^2
+const mu = 3.9860044189e5; // km^3 / s^2
 
 // Average Radius of Earth (spherical model)
-const R_earth = 6.371009e6; // m
+const R_earth = 6.371009e3; // km
 
 // TODO: Add doc for class
 class Satellite {
@@ -63,29 +63,27 @@ class Satellite {
         var nu = 2.0 * Math.atan(Math.sqrt((1.0 + e)/(1.0 - e)) * Math.tan(Ek / 2.0));
 
         // Get position vector in perfical reference frame
-        var r_pqw_ = math.multiply(
-                        this.a * (1.0 - Math.pow(this.e, 2) / (1.0 + this.e * Math.cos(nu))),
-                        math.matrix([[Math.cos(nu)], [Math.sin(nu)], [0.0]])
-                    );
+        var r_pqw_ = new THREE.Vector3(Math.cos(nu), Math.sin(nu), 0.0).multiplyScalar(
+                        this.a * (1.0 - Math.pow(this.e, 2) / (1.0 + this.e * Math.cos(nu))) );
+
 
         // Construct inverted rotation matrices from perfical frame to earth inertial frame
-        var R3_Omega_inv = math.matrix([[Math.cos(this.Omega), -Math.sin(this.Omega), 0.0],
-                                        [Math.sin(this.Omega), Math.cos(this.Omega), 0.0],
-                                        [0.0, 0.0, 1.0]]);
-        var R1_i_inv = math.matrix([[1.0, 0.0, 0.0],
-                                    [0.0, Math.cos(this.i), -Math.sin(this.i)],
-                                    [0.0, Math.sin(this.i), Math.cos(this.i)]]);
-        var R3_omega_inv = math.matrix([[Math.cos(this.omega), -Math.sin(this.omega), 0.0],
-                                        [Math.sin(this.omega), Math.cos(this.omega), 0.0],
-                                        [0.0, 0.0, 1.0]]);
+        var R3_Omega_inv = new THREE.Matrix3().set(
+                                Math.cos(this.Omega) , -Math.sin(this.Omega), 0.0,
+                                Math.sin(this.Omega) , Math.cos(this.Omega) , 0.0,
+                                0.0                  , 0.0                  , 1.0);
+        var R1_i_inv = new THREE.Matrix3().set(
+                                1.0                  , 0.0                  , 0.0,
+                                0.0                  , Math.cos(this.i)     , -Math.sin(this.i),
+                                0.0                  , Math.sin(this.i)     , Math.cos(this.i));
+        var R3_omega_inv = new THREE.Matrix3().set(
+                                Math.cos(this.omega) , -Math.sin(this.omega), 0.0,
+                                Math.sin(this.omega) , Math.cos(this.omega) , 0.0,
+                                0.0                  , 0.0                  , 1.0);
 
         // Convert the position from the perifocal frame to the Earth centered inertial frame
-        var r_eci_ = math.multiply(R3_Omega_inv,
-                                   math.multiply(R1_i_inv,
-                                                 math.multiply(R3_omega_inv,
-                                                               r_pqw_)
-                                                )
-                                  );
+        var r_eci_ = r_pqw_.clone();
+        r_eci_.applyMatrix3(R3_omega_inv).applyMatrix3(R1_i_inv).applyMatrix3(R3_Omega_inv);
 
         // Return the position vector in the Earth centered inertial frame
         return r_eci_;
