@@ -37,11 +37,6 @@ const sat2 = new Satellite(2.0 * R_earth, 0.0, 0.0, 0.0, 0.0, Math.PI, scene);
 const ambient_light = new THREE.AmbientLight(0xf1f1f1, 1);
 scene.add(ambient_light);
 
-// Spot Light Source
-//const spot_light = new THREE.DirectionalLight(0xffffff);
-//spot_light.position.set(100*R_earth,100*R_earth,100*R_earth);
-//scene.add(spot_light);
-
 // Render loop
 var t = 0.0;
 function render() {
