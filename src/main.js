@@ -29,9 +29,8 @@ scene.add(earth_mesh);
 const axesHelper = new THREE.AxesHelper(2.0 * R_earth);
 scene.add( axesHelper );
 
-// Satellite Mesh
-const sat1 = new Satellite(2.0 * R_earth, 0.0, 0.0, 0.0, 0.0, 0.0, scene);
-const sat2 = new Satellite(2.0 * R_earth, 0.0, 0.0, 0.0, 0.0, Math.PI, scene);
+// Satellite Constellation
+const walker_con = new WalkerConstellation(60.0 * Math.PI / 180.0, 60, 12, 2, 2.0 * R_earth, scene);
 
 // Ambient Light Source
 const ambient_light = new THREE.AmbientLight(0xf1f1f1, 1);
@@ -40,10 +39,9 @@ scene.add(ambient_light);
 // Render loop
 var t = 0.0;
 function render() {
-    t += 50.0;
+    t += 10.0;
     requestAnimationFrame(render);
-    sat1.updatePosition(t);
-    sat2.updatePosition(t);
+    walker_con.updatePositions(t);
 
     controls.update();
     renderer.render(scene, camera);

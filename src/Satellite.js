@@ -31,16 +31,17 @@ class Satellite {
         this.mean_motion = Math.sqrt(mu / Math.pow(a, 3));
 
         // Compute eccentric anomaly at start epoch
-        const E_0 = 2.0 * Math.atan(Math.sqrt((1 - e)/(1 + e)) * Math.tan(nu_0 / 2.0));
+        var E_0 = 2.0 * Math.atan(Math.sqrt((1.0 - e)/(1.0 + e)) * Math.tan(nu_0 / 2.0));
+        E_0 += E_0 >= 0.0 ? 0.0 : 2.0 * Math.PI;
 
         // Compute mean anomaly at start epoch
         this.M_0 = E_0 - e * Math.sin(E_0);
 
         // Satellite geometry in renderiing
-        const geometry = new THREE.SphereGeometry(0.05 * R_earth, 32, 32);
+        const geometry = new THREE.SphereGeometry(0.025 * R_earth, 32, 32);
 
         // Satellite material in rendering
-        const material = new THREE.MeshLambertMaterial( { color: 0x999999 } );
+        const material = new THREE.MeshLambertMaterial( { color: 0xff0000 } );
 
         // Satellite mesh in rendering
         this.mesh = new THREE.Mesh(geometry, material);
@@ -69,18 +70,18 @@ class Satellite {
         var Ek = 0.0;
 
         // Iterate using the N-R scheme until the tolerance criteria is met
-        while (Math.abs((Ekp1 - Ek) / Ekp1) > 1e-6) {
+        while (Math.abs((Ekp1 - Ek) / Ekp1) > 1.0e-6) {
             Ek = Ekp1;
             Ekp1 = Ek - f(Ek) / fp(Ek);
         }
 
         // Compute true anomaly at the queried time
-        const nu = 2.0 * Math.atan(Math.sqrt((1.0 + e)/(1.0 - e)) * Math.tan(Ek / 2.0));
+        var nu = 2.0 * Math.atan(Math.sqrt((1.0 + e)/(1.0 - e)) * Math.tan(Ek / 2.0));
+        nu += nu >= 0.0 ? 0.0 : 2.0 * Math.PI;
 
         // Get position vector in perfical reference frame
         const r_pqw_ = new THREE.Vector3(Math.cos(nu), Math.sin(nu), 0.0).multiplyScalar(
-                        this.a * (1.0 - Math.pow(this.e, 2) / (1.0 + this.e * Math.cos(nu))) );
-
+                        this.a * (1.0 - Math.pow(e, 2)) / (1.0 + e * Math.cos(nu)) );
 
         // Construct inverted rotation matrices from perfical frame to earth inertial frame
         const R3_Omega_inv = new THREE.Matrix3().set(
@@ -117,7 +118,7 @@ class Satellite {
 
         // Compute the orbit of the satellite as an array of positions
         const points = [];
-        for (var t = 0; t < T; t += T / 100.0) {
+        for (var t = 0; t < 1.1 * T; t += T / 100.0) {
             points.push(this.position(t));
         }
 
