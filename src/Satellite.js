@@ -37,6 +37,7 @@ class Satellite {
         this.M_0 = E_0 - e * Math.sin(E_0);
     }
 
+    // TODO: Add doc for function
     position(t) {
         // Compute mean anomaly at the queried time
         var M = (this.M_0 + t * this.mean_motion) % (2.0 * Math.PI);
@@ -78,7 +79,7 @@ class Satellite {
                                         [Math.sin(this.omega), Math.cos(this.omega), 0.0],
                                         [0.0, 0.0, 1.0]]);
 
-        // Convert the position from the perifocal frame to the earth centered inertial frame
+        // Convert the position from the perifocal frame to the Earth centered inertial frame
         var r_eci_ = math.multiply(R3_Omega_inv,
                                    math.multiply(R1_i_inv,
                                                  math.multiply(R3_omega_inv,
@@ -86,6 +87,7 @@ class Satellite {
                                                 )
                                   );
 
+        // Return the position vector in the Earth centered inertial frame
         return r_eci_;
     }
 }
