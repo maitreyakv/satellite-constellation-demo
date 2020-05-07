@@ -19,11 +19,14 @@ camera.position.z = 1.0 * R_earth;
 camera.lookAt(0,0,0);
 controls.update();
 
-// Earth Mesh
+// Earth
 const earth_geom = new THREE.SphereGeometry(R_earth, 32, 32);
-const earth_mat = new THREE.MeshNormalMaterial();
+const earth_mat = new THREE.MeshPhongMaterial( { color: 0x999999 } );
 const earth_mesh = new THREE.Mesh(earth_geom, earth_mat);
 scene.add(earth_mesh);
+
+// Ground Station
+const ground_station = new GroundStation(30.0 * Math.PI / 180.0, 0.0);
 
 // Axes of intertial reference frame
 const axesHelper = new THREE.AxesHelper(2.0 * R_earth);
@@ -42,6 +45,7 @@ function render() {
     t += 10.0;
     requestAnimationFrame(render);
     walker_con.updatePositions(t);
+    ground_station.updatePosition(t);
 
     controls.update();
     renderer.render(scene, camera);
