@@ -1,7 +1,7 @@
 // TODO: Add doc for this class
 class WalkerConstellation extends Constellation {
     // Constructor for the WalkerConstellation class
-    constructor(i, T, P, F, a, scene) {
+    constructor(i, T, P, F, a, scene, ground_station) {
         // Call Constellation constructor first
         super();
 
@@ -16,7 +16,7 @@ class WalkerConstellation extends Constellation {
                 const nu_0 = (n * 2.0 * Math.PI * P / T) + (plane * 2.0 * Math.PI * F / T);
 
                 // Initialize the satellite
-                this.sats.push(new Satellite(a, 0.0, i, 0.0, Omega, nu_0, scene));
+                this.sats.push(new Satellite(a, 0.0, i, 0.0, Omega, nu_0, scene, ground_station));
             }
         }
     }

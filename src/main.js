@@ -33,7 +33,7 @@ const axesHelper = new THREE.AxesHelper(2.0 * R_earth);
 scene.add( axesHelper );
 
 // Satellite Constellation
-const walker_con = new WalkerConstellation(60.0 * Math.PI / 180.0, 60, 12, 2, 2.0 * R_earth, scene);
+const walker_con = new WalkerConstellation(60.0 * Math.PI / 180.0, 30, 10, 1, 2.0 * R_earth, scene, ground_station);
 
 // Ambient Light Source
 const ambient_light = new THREE.AmbientLight(0xf1f1f1, 1);
@@ -44,8 +44,8 @@ var t = 0.0;
 function render() {
     t += 10.0;
     requestAnimationFrame(render);
-    walker_con.updatePositions(t);
     ground_station.updatePosition(t);
+    walker_con.updatePositions(t);
 
     controls.update();
     renderer.render(scene, camera);

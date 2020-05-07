@@ -11,7 +11,7 @@ const R_earth = 6.371009e3; // km
 // TODO: Add doc for class
 class Satellite {
     // Constructor for Satellite class
-    constructor(a, e, i, omega, Omega, nu_0, scene) {
+    constructor(a, e, i, omega, Omega, nu_0, scene, ground_station) {
         // Initialize semi-major-axis length
         this.a = a;
 
@@ -51,6 +51,20 @@ class Satellite {
 
         // Plot the orbit of the satellite
         this.plotOrbit(scene);
+
+        // Compute the line of sight segment end points
+        const points = [this.position(0.0), ground_station.position(0.0)];
+
+        // Create a curve for the line of sight segment
+        this.los_geom = new THREE.BufferGeometry().setFromPoints( points );
+        const los_mat = new THREE.LineBasicMaterial( { color : 0x00ff00 } );
+        this.los = new THREE.Line( this.los_geom, los_mat );
+
+        // Add the line of sight to the scene
+        scene.add(this.los);
+
+        // Save the ground station for updates
+        this.ground_station = ground_station;
     }
 
     // TODO: Add doc for function
@@ -109,6 +123,19 @@ class Satellite {
     updatePosition(t) {
         // Update the position of the satellite in the scene
         this.mesh.position.copy(this.position(t));
+
+        // Compute the line of sight segment end points
+        const points = [this.mesh.position, this.ground_station.mesh.position];
+
+        // Update the line of sight segment
+        this.los_geom.setFromPoints( points );
+
+        // Compute dot product of ground station position and line of sight vector
+        const dot_prod_result = this.ground_station.mesh.position.dot(
+                                this.mesh.position.clone().sub(this.ground_station.mesh.position));
+
+        // Update line of sight segment visibility
+        this.los.visible = dot_prod_result >= 0.0 ? true : false;
     }
 
     // TODO: Add doc for this function
